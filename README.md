@@ -10,5 +10,6 @@
 - charge level in percents is sent in addition to voltage level
 - removed all unnecessary code: button handling, LED blink
 - renamed the module name sent as a pairing info
+- ability to define offset value for humidity sensor
 
 Run `./build.sh` to build all firmware files.
