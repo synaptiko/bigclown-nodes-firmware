@@ -83,7 +83,7 @@ void application_init(void)
 
     // Initialize pir module
     bc_module_pir_init(&pir);
-    bc_module_pir_set_sensitivity(&pir, BC_MODULE_PIR_SENSITIVITY_HIGH);
+    bc_module_pir_set_sensitivity(&pir, BC_MODULE_PIR_SENSITIVITY_VERY_HIGH);
     bc_module_pir_set_event_handler(&pir, pir_event_handler, NULL);
 
     bc_radio_pairing_request("motion-detector", VERSION);
