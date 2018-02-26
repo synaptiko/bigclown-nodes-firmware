@@ -1,17 +1,13 @@
 #include <application.h>
 
 #define BATTERY_UPDATE_INTERVAL (60 * 60 * 1000) // 1 hour
-#define UPDATE_INTERVAL (1 * 1000) // 1 second
-#define PUB_NO_CHANGE_INTERVAL (1 * 60 * 1000) // 1 minute
+#define UPDATE_INTERVAL (10 * 1000) // 10 seconds
+#define PUB_NO_CHANGE_INTERVAL (15 * 60 * 1000) // 15 minutes
 
 #define TEMPERATURE_TAG_PUB_VALUE_CHANGE 0.2f
 #define HUMIDITY_TAG_PUB_VALUE_CHANGE 5.0f
 #define LUX_METER_TAG_PUB_VALUE_CHANGE 25.0f
 #define BAROMETER_TAG_PUB_VALUE_CHANGE 20.0f
-
-#ifndef HUMIDITY_TAG_CORRECTION_OFFSET
-#define HUMIDITY_TAG_CORRECTION_OFFSET 0.0f
-#endif
 
 struct {
     event_param_t temperature;
@@ -66,8 +62,6 @@ void climate_module_event_handler(bc_module_climate_event_t event, void *event_p
     {
         if (bc_module_climate_get_humidity_percentage(&value))
         {
-            value = (value - HUMIDITY_TAG_CORRECTION_OFFSET);
-
             if ((fabs(value - params.humidity.value) >= HUMIDITY_TAG_PUB_VALUE_CHANGE) || (params.humidity.next_pub < bc_scheduler_get_spin_tick()))
             {
                 bc_radio_pub_humidity(BC_RADIO_PUB_CHANNEL_R3_I2C0_ADDRESS_DEFAULT, &value);
@@ -123,8 +117,6 @@ void humidity_tag_event_handler(bc_tag_humidity_t *self, bc_tag_humidity_event_t
     {
         if (bc_tag_humidity_get_humidity_percentage(self, &value))
         {
-            value = (value - HUMIDITY_TAG_CORRECTION_OFFSET);
-
             if ((fabs(value - param->value) >= HUMIDITY_TAG_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
             {
                 bc_radio_pub_humidity(param->channel, &value);
@@ -157,8 +149,8 @@ void application_init(void)
 
 #ifdef USE_HUMIDITY_TAG
     // Initialize humidity tag
-    humidity_event_param.channel = BC_RADIO_PUB_CHANNEL_R2_I2C1_ADDRESS_DEFAULT;
-    bc_tag_humidity_init(&humidity, BC_TAG_HUMIDITY_REVISION_R2, BC_I2C_I2C1, BC_TAG_HUMIDITY_I2C_ADDRESS_DEFAULT);
+    humidity_event_param.channel = BC_RADIO_PUB_CHANNEL_R3_I2C1_ADDRESS_DEFAULT;
+    bc_tag_humidity_init(&humidity, BC_TAG_HUMIDITY_REVISION_R3, BC_I2C_I2C1, BC_TAG_HUMIDITY_I2C_ADDRESS_DEFAULT);
     bc_tag_humidity_set_update_interval(&humidity, UPDATE_INTERVAL);
     bc_tag_humidity_set_event_handler(&humidity, humidity_tag_event_handler, &humidity_event_param);
 #endif

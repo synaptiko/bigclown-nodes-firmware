@@ -1,9 +1,8 @@
 #include <application.h>
 
 #define BATTERY_UPDATE_INTERVAL (60 * 60 * 1000) // 1 hour
-
-#define UPDATE_INTERVAL (1 * 1000) // 1 second
-#define PUB_NO_CHANGE_INTERVAL (1 * 60 * 1000) // 1 minute
+#define UPDATE_INTERVAL (15 * 1000) // 15 seconds
+#define PUB_NO_CHANGE_INTERVAL (15 * 60 * 1000) // 15 minutes
 
 #define TEMPERATURE_TAG_PUB_VALUE_CHANGE 0.2f
 
@@ -83,7 +82,7 @@ void application_init(void)
 
     // Initialize pir module
     bc_module_pir_init(&pir);
-    bc_module_pir_set_sensitivity(&pir, BC_MODULE_PIR_SENSITIVITY_VERY_HIGH);
+    bc_module_pir_set_sensitivity(&pir, BC_MODULE_PIR_SENSITIVITY_HIGH);
     bc_module_pir_set_event_handler(&pir, pir_event_handler, NULL);
 
     bc_radio_pairing_request("motion-detector", VERSION);
