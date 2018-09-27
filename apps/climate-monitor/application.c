@@ -22,21 +22,23 @@ event_param_t humidity_event_param = { .next_pub = 0 };
 
 void battery_event_handler(bc_module_battery_event_t event, void *event_param)
 {
-    (void) event;
     (void) event_param;
 
     float voltage;
 
-    if (bc_module_battery_get_voltage(&voltage))
+    if (event == BC_MODULE_BATTERY_EVENT_UPDATE)
     {
-        bc_radio_pub_battery(&voltage);
-    }
+        if (bc_module_battery_get_voltage(&voltage))
+        {
+            bc_radio_pub_battery(&voltage);
+        }
 
-    int charge_level;
+        int charge_level;
 
-    if (bc_module_battery_get_charge_level(&charge_level))
-    {
-        bc_radio_pub_int("battery/-/charge-level", &charge_level);
+        if (bc_module_battery_get_charge_level(&charge_level))
+        {
+            bc_radio_pub_int("battery/-/charge-level", &charge_level);
+        }
     }
 }
 
@@ -132,12 +134,7 @@ void application_init(void)
     bc_radio_init(BC_RADIO_MODE_NODE_SLEEPING);
 
     // Initialize battery
-#ifndef USE_BATTERY_FORMAT_STANDARD
-    bc_module_battery_init(BC_MODULE_BATTERY_FORMAT_MINI);
-#endif
-#ifdef USE_BATTERY_FORMAT_STANDARD
-    bc_module_battery_init(BC_MODULE_BATTERY_FORMAT_STANDARD);
-#endif
+    bc_module_battery_init();
     bc_module_battery_set_event_handler(battery_event_handler, NULL);
     bc_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
